@@ -63,12 +63,24 @@ class FirstForm extends React.Component {
     this.setValidateInfo(field);
   };
 
+  validate = () => {
+    const statuses = [];
+    statuses.push(this.validateName());
+
+    return statuses.every(_ => _);
+  }
+
   save = () => {
     const { name, email } = this.state;
+
+    const status = this.validate();
+    if (!status) return;
+
     console.log('保存的数据如下：', {
       name,
       email
     });
+    alert('数据已提交');
   };
 
   render() {
