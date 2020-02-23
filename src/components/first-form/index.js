@@ -7,19 +7,61 @@ const Box = styled.div`
 `;
 
 class FirstForm extends React.Component {
-
   state = {
     name: '',
     email: '',
-  }
 
-  changeName = (e) => {
-    this.setState({ name: e.target.value });
-  }
+    validateStatus: {
+      name: '',
+      email: ''
+    },
+    help: {
+      name: '',
+      email: ''
+    }
+  };
 
-  changeEmail = (e) => {
+  changeName = e => {
+    this.setState({ name: e.target.value }, this.validateName);
+  };
+
+  validateName = () => {
+    const { name } = this.state;
+    const field = 'name';
+
+    if (!name) {
+      this.setValidateInfo(field, 'error', '请输入用户名');
+      return false;
+    }
+    if (name.length > 10) {
+      this.setValidateInfo(field, 'error', '用户名超过了10个字符');
+      return false;
+    }
+
+    this.resetValidateInfo(field);
+    return true;
+  };
+
+  changeEmail = e => {
     this.setState({ email: e.target.value });
-  }
+  };
+
+  setValidateInfo = (field, status = '', tip = '') => {
+    this.setState({
+      validateStatus: {
+        ...this.state.validateStatus,
+        [field]: status
+      },
+      help: {
+        ...this.state.help,
+        [field]: tip
+      }
+    });
+  };
+
+  resetValidateInfo = field => {
+    this.setValidateInfo(field);
+  };
 
   save = () => {
     const { name, email } = this.state;
@@ -27,17 +69,25 @@ class FirstForm extends React.Component {
       name,
       email
     });
-  }
-
+  };
 
   render() {
-    const { name, email } = this.state;
+    const { name, email, validateStatus, help } = this.state;
 
     return (
       <Box>
         <Form>
-          <Form.Item label="用户名" required>
-            <Input value={name} onChange={this.changeName} />
+          <Form.Item
+            label="用户名"
+            required
+            validateStatus={validateStatus.name}
+            help={help.name}
+          >
+            <Input
+              value={name}
+              onChange={this.changeName}
+              placeholder="用户名长度最长为10个字符"
+            />
           </Form.Item>
 
           <Form.Item label="邮箱">
@@ -50,7 +100,9 @@ class FirstForm extends React.Component {
         </Form>
 
         <div>
-          <Button type="primary" onClick={this.save}>保存</Button>
+          <Button type="primary" onClick={this.save}>
+            保存
+          </Button>
         </div>
       </Box>
     );
