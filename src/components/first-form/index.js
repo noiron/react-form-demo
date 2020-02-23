@@ -43,7 +43,24 @@ class FirstForm extends React.Component {
   };
 
   changeEmail = e => {
-    this.setState({ email: e.target.value });
+    this.setState({ email: e.target.value }, this.validateEmail);
+  };
+
+  validateEmail = () => {
+    const { email } = this.state;
+    const field = 'email';
+
+    if (!email) {
+      this.setValidateInfo(field, 'error', '请输入邮箱地址');
+      return false;
+    }
+    if (!/.+@.+\.com/.test(email)) {
+      this.setValidateInfo(field, 'error', '请输入正确的邮箱地址');
+      return false;
+    }
+
+    this.resetValidateInfo(field);
+    return true;
   };
 
   setValidateInfo = (field, status = '', tip = '') => {
@@ -67,8 +84,8 @@ class FirstForm extends React.Component {
     const statuses = [];
     statuses.push(this.validateName());
 
-    return statuses.every(_ => _);
-  }
+    return statuses.every(o => o);
+  };
 
   save = () => {
     const { name, email } = this.state;
@@ -102,8 +119,16 @@ class FirstForm extends React.Component {
             />
           </Form.Item>
 
-          <Form.Item label="邮箱">
-            <Input value={email} onChange={this.changeEmail} />
+          <Form.Item
+            label="邮箱"
+            validateStatus={validateStatus.email}
+            help={help.email}
+          >
+            <Input
+              value={email}
+              onChange={this.changeEmail}
+              placeholder="请输入正确的邮箱地址"
+            />
           </Form.Item>
 
           <Form.Item label="地区">
