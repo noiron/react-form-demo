@@ -8,32 +8,38 @@ const Box = styled.div`
 
 class FirstForm extends React.Component {
   state = {
-    name: '',
-    email: '',
-
-    validateStatus: {
-      name: '',
-      email: ''
+    name: {
+      value: '',
+      validateStatus: '',
+      help: '',
     },
-    help: {
-      name: '',
-      email: ''
-    }
+    email: {
+      value: '',
+      validateStatus: '',
+      help: '',
+    },
   };
 
   changeName = e => {
-    this.setState({ name: e.target.value }, this.validateName);
+    this.setState(
+      {
+        name: {
+          value: e.target.value
+        },
+      },
+      this.validateName
+    );
   };
 
   validateName = () => {
     const { name } = this.state;
     const field = 'name';
 
-    if (!name) {
+    if (!name.value) {
       this.setValidateInfo(field, 'error', '请输入用户名');
       return false;
     }
-    if (name.length > 10) {
+    if (name.value.length > 10) {
       this.setValidateInfo(field, 'error', '用户名超过了10个字符');
       return false;
     }
@@ -43,18 +49,18 @@ class FirstForm extends React.Component {
   };
 
   changeEmail = e => {
-    this.setState({ email: e.target.value }, this.validateEmail);
+    this.setState({ email: { value: e.target.value } }, this.validateEmail);
   };
 
   validateEmail = () => {
     const { email } = this.state;
     const field = 'email';
 
-    if (!email) {
+    if (!email.value) {
       this.setValidateInfo(field, 'error', '请输入邮箱地址');
       return false;
     }
-    if (!/.+@.+\.com/.test(email)) {
+    if (!/.+@.+\.com/.test(email.value)) {
       this.setValidateInfo(field, 'error', '请输入正确的邮箱地址');
       return false;
     }
@@ -65,13 +71,10 @@ class FirstForm extends React.Component {
 
   setValidateInfo = (field, status = '', tip = '') => {
     this.setState({
-      validateStatus: {
-        ...this.state.validateStatus,
-        [field]: status
-      },
-      help: {
-        ...this.state.help,
-        [field]: tip
+      [field]: {
+        value: this.state[field].value,
+        validateStatus: status,
+        help: tip
       }
     });
   };
@@ -83,6 +86,7 @@ class FirstForm extends React.Component {
   validate = () => {
     const statuses = [];
     statuses.push(this.validateName());
+    statuses.push(this.validateEmail());
 
     return statuses.every(o => o);
   };
@@ -101,7 +105,8 @@ class FirstForm extends React.Component {
   };
 
   render() {
-    const { name, email, validateStatus, help } = this.state;
+    console.log('render');
+    const { name, email } = this.state;
 
     return (
       <Box>
@@ -109,11 +114,11 @@ class FirstForm extends React.Component {
           <Form.Item
             label="用户名"
             required
-            validateStatus={validateStatus.name}
-            help={help.name}
+            validateStatus={name.validateStatus}
+            help={name.help}
           >
             <Input
-              value={name}
+              value={name.value}
               onChange={this.changeName}
               placeholder="用户名长度最长为10个字符"
             />
@@ -121,11 +126,11 @@ class FirstForm extends React.Component {
 
           <Form.Item
             label="邮箱"
-            validateStatus={validateStatus.email}
-            help={help.email}
+            validateStatus={email.validateStatus}
+            help={email.help}
           >
             <Input
-              value={email}
+              value={email.value}
               onChange={this.changeEmail}
               placeholder="请输入正确的邮箱地址"
             />
