@@ -11,24 +11,13 @@ class FirstForm extends React.Component {
     name: {
       value: '',
       validateStatus: '',
-      help: '',
+      help: ''
     },
     email: {
       value: '',
       validateStatus: '',
-      help: '',
-    },
-  };
-
-  changeName = e => {
-    this.setState(
-      {
-        name: {
-          value: e.target.value
-        },
-      },
-      this.validateName
-    );
+      help: ''
+    }
   };
 
   validateName = () => {
@@ -48,10 +37,6 @@ class FirstForm extends React.Component {
     return true;
   };
 
-  changeEmail = e => {
-    this.setState({ email: { value: e.target.value } }, this.validateEmail);
-  };
-
   validateEmail = () => {
     const { email } = this.state;
     const field = 'email';
@@ -67,6 +52,15 @@ class FirstForm extends React.Component {
 
     this.resetValidateInfo(field);
     return true;
+  };
+
+  changeFieldValue = (field, value, callback) => {
+    this.setState(
+      {
+        [field]: { value }
+      },
+      callback || null
+    );
   };
 
   setValidateInfo = (field, status = '', tip = '') => {
@@ -119,19 +113,28 @@ class FirstForm extends React.Component {
           >
             <Input
               value={name.value}
-              onChange={this.changeName}
+              onChange={e =>
+                this.changeFieldValue('name', e.target.value, this.validateName)
+              }
               placeholder="用户名长度最长为10个字符"
             />
           </Form.Item>
 
           <Form.Item
             label="邮箱"
+            required
             validateStatus={email.validateStatus}
             help={email.help}
           >
             <Input
               value={email.value}
-              onChange={this.changeEmail}
+              onChange={e =>
+                this.changeFieldValue(
+                  'email',
+                  e.target.value,
+                  this.validateEmail
+                )
+              }
               placeholder="请输入正确的邮箱地址"
             />
           </Form.Item>
